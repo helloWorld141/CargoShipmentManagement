@@ -48,16 +48,20 @@ public class MultipartUtility {
         httpConn.setUseCaches(false);
         httpConn.setDoOutput(true); // indicates POST method
         httpConn.setDoInput(true);
+        System.out.println("3");
         int responseCode = httpConn.getResponseCode(); //can call this instead of con.connect()
+        System.out.println("4");
         if (responseCode >= 400 && responseCode <= 499) {
             throw new Exception("Bad authentication status: " + responseCode); //provide a more meaningful exception message
         }
-//        httpConn.setInstanceFollowRedirects(false);
+        httpConn.setInstanceFollowRedirects(false);
         httpConn.setRequestProperty("Content-Type",
                 "multipart/form-data; boundary=" + boundary);
         httpConn.setRequestProperty("User-Agent", "CodeJava Agent");
         httpConn.setRequestProperty("Test", "Bonjour");
+        System.out.println("4,5");
         outputStream = httpConn.getOutputStream();
+        System.out.println("5");
         writer = new PrintWriter(new OutputStreamWriter(outputStream, charset),
                 true);
         System.out.println("About to finish");
