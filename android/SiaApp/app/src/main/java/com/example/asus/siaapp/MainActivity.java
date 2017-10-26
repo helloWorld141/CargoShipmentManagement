@@ -34,22 +34,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-                Thread thread = new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try  {
-                            sendRequest(null);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
 //
-                thread.start();
+//                Thread thread = new Thread(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
+//                        try  {
+//                            sendRequest(null);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+////
+//                thread.start();
 
-//                dispatchTakePictureIntent();
+                dispatchTakePictureIntent();
             }
         });
     }
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             multipart.addFormField("width", "1");
             multipart.addHeaderField("width", "1");
 //            multipart.addFilePart("image", uploadedFile);
-//            multipart.addFilePart("image", bm);
+            multipart.addFilePart("image", bm);
             String response = multipart.finish(); // response from server.
             System.out.println("2");
             System.out.println("The response is " + response);
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+//
     Camera.PictureCallback jpegCallBack=new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
             final Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);;
@@ -128,12 +128,17 @@ public class MainActivity extends AppCompatActivity {
             });
 //
             thread.start();
+            camera.release();
+
         }
     };
 
 
     //TODO: clean up
     private void dispatchTakePictureIntent() {
+//        if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(CodeScanner.this, new String[]{android.Manifest.permission.CAMERA}, 50);
+//        }
 //        if ( ContextCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
 //
 //            ActivityCompat.requestPermissions( this, new String[] {  android.Manifest.permission.ACCESS_COARSE_LOCATION  },
@@ -153,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
 //        Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 //
 //        startActivityForResult(it, 0);
-        camera = Camera.open();
+        System.out.println("About to open");
+        camera = Camera.open(0);
         camera.takePicture(null, null, null, jpegCallBack);
-        camera.release();
 //
 //        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        Uri imageUri = getOutputMediaFile();
@@ -167,6 +172,11 @@ public class MainActivity extends AppCompatActivity {
 //        Intent takePictureIntent = new Intent("android.media.action.IMAGE_CAPTURE");
 //        startActivity(intent);
 
+
+//        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+//            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+//        }
 //        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
 //            // Create the File where the photo should go
 //            File photoFile = null;
