@@ -1,0 +1,10 @@
+django
+#uncomment for ubuntu server
+gunicorn
+numpy
+scipy
+opencv-python
+imutils
+requests
+channels
+Twisted[tls,http2]
