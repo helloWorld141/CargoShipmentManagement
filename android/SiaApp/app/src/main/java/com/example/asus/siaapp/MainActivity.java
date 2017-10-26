@@ -2,14 +2,11 @@ package com.example.asus.siaapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,12 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+//import android.graphics.Camera;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    static Camera camera = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try  {
-                            sendRequest();
+                            sendRequest(null);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -52,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 //
                 thread.start();
 
-                dispatchTakePictureIntent();
+//                dispatchTakePictureIntent();
             }
         });
     }
@@ -79,19 +76,20 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void sendRequest(){
+    public void sendRequest(Bitmap bm){
         try {
             String charset = "UTF-8";
             String requestURL = "http://54.251.191.230/api/dims"; //"http://localhost:8000/api/dims";
 //           String requestURL = "https://www.google.com.sg";
-            String file_path = "/home/anh_huynh2111/Desktop/Object_size/akjdf.png";
-            File uploadedFile = new File(file_path);
+//            String file_path = "/home/anh_huynh2111/Desktop/Object_size/akjdf.png";
+//            File uploadedFile = new File(file_path);
 
             MultipartUtility multipart = new MultipartUtility(requestURL, charset);
             System.out.println("1");
             multipart.addFormField("width", "1");
             multipart.addHeaderField("width", "1");
-            multipart.addFilePart("image", uploadedFile);
+//            multipart.addFilePart("image", uploadedFile);
+//            multipart.addFilePart("image", bm);
             String response = multipart.finish(); // response from server.
             System.out.println("2");
             System.out.println("The response is " + response);
@@ -106,6 +104,33 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
     protected static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 0;
+
+
+
+
+    Camera.PictureCallback jpegCallBack=new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            final Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);;
+
+            System.out.println("Take picture already ");
+            ImageView iv = (ImageView) findViewById(R.id.ReturnedImage);
+            iv.setImageBitmap(bmp);
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try  {
+                        sendRequest(bmp);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+//
+            thread.start();
+        }
+    };
+
 
     //TODO: clean up
     private void dispatchTakePictureIntent() {
@@ -125,8 +150,12 @@ public class MainActivity extends AppCompatActivity {
 //        Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 ////        it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
 //        startActivityForResult(it, 1);
-        Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(it, 0);
+//        Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//
+//        startActivityForResult(it, 0);
+        camera = Camera.open();
+        camera.takePicture(null, null, null, jpegCallBack);
+        camera.release();
 //
 //        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 //        Uri imageUri = getOutputMediaFile();
@@ -166,10 +195,24 @@ public class MainActivity extends AppCompatActivity {
             // Get Extra from the intent
             Bundle extras = data.getExtras();
             // Get the returned image from extra
-            Bitmap bmp = (Bitmap) extras.get("data");
+            final Bitmap bmp = (Bitmap) extras.get("data");
 
+            System.out.println("Take picture already ");
             ImageView iv = (ImageView) findViewById(R.id.ReturnedImage);
             iv.setImageBitmap(bmp);
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try  {
+                        sendRequest(bmp);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+//
+            thread.start();
         }
     }
 //    @Override
@@ -222,4 +265,7 @@ public class MainActivity extends AppCompatActivity {
 //        return image;
 //    }
 
+//    public void capturePhoto() {
+//
+//    }
 }

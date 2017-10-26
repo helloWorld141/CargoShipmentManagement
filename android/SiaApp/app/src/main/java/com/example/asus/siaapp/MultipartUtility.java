@@ -1,10 +1,11 @@
 package com.example.asus.siaapp;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -49,11 +50,11 @@ public class MultipartUtility {
         httpConn.setDoOutput(true); // indicates POST method
         httpConn.setDoInput(true);
         System.out.println("3");
-        int responseCode = httpConn.getResponseCode(); //can call this instead of con.connect()
-        System.out.println("4");
-        if (responseCode >= 400 && responseCode <= 499) {
-            throw new Exception("Bad authentication status: " + responseCode); //provide a more meaningful exception message
-        }
+//        int responseCode = httpConn.getResponseCode(); //can call this instead of con.connect()
+//        System.out.println("4");
+//        if (responseCode >= 400 && responseCode <= 499) {
+//            throw new Exception("Bad authentication status: " + responseCode); //provide a more meaningful exception message
+//        }
         httpConn.setInstanceFollowRedirects(false);
         httpConn.setRequestProperty("Content-Type",
                 "multipart/form-data; boundary=" + boundary);
@@ -88,12 +89,14 @@ public class MultipartUtility {
      * Adds a upload file section to the request
      *
      * @param fieldName  name attribute in <input type="file" name="..." />
-     * @param uploadFile a File to be uploaded
+     * @param bitmap a File to be uploaded
      * @throws IOException
      */
-    public void addFilePart(String fieldName, File uploadFile)
+//    public void addFilePart(String fieldName, File uploadFile)
+     public void addFilePart(String fieldName, Bitmap bitmap)
             throws IOException {
-        String fileName = uploadFile.getName();
+//        String fileName = uploadFile.getName();
+        String fileName = "image";
         writer.append("--" + boundary).append(LINE_FEED);
         writer.append(
                 "Content-Disposition: form-data; name=\"" + fieldName
@@ -107,7 +110,13 @@ public class MultipartUtility {
         writer.append(LINE_FEED);
         writer.flush();
 
-        FileInputStream inputStream = new FileInputStream(uploadFile);
+
+         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+         bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+         byte[] bitmapdata = bos.toByteArray();
+         ByteArrayInputStream inputStream = new ByteArrayInputStream(bitmapdata);
+
+//        FileInputStream inputStream = new FileInputStream(uploadFile);
         byte[] buffer = new byte[4096];
         int bytesRead = -1;
         while ((bytesRead = inputStream.read(buffer)) != -1) {
