@@ -85,19 +85,20 @@ def cargo(req):
 			dimensions = req.POST.get('dimensions')
 			tiltable = json.loads(req.POST.get('tiltable', 'false'))
 			stackable = json.loads(req.POST.get('stackable', 'false'))
+			pieces = json.loads(req.POST.get('pieces', 1))
 			take_picture = json.loads(req.POST.get('take_picture', 'false'))
-			print(id, dimensions, tiltable, stackable, take_picture)
+			print(id, dimensions, tiltable, stackable, take_picture, pieces)
 			if not take_picture:
 				print('not taking picture')
-				Cargo.objects.create(id=id, dims=dimensions, tiltable=tiltable, stackable=stackable)
+				Cargo.objects.create(id=id, dims=dimensions, tiltable=tiltable, stackable=stackable, pieces=pieces)
 				return JsonResponse({'created': True})
 			else:
-				Cargo.objects.create(id=id, dims=dimensions, tiltable=tiltable, stackable=stackable)
+				Cargo.objects.create(id=id, dims=dimensions, tiltable=tiltable, stackable=stackable, pieces=pieces)
 				Group('cam').send({'text': '{"id" :"' + id + '",\
 											"take_picture": True}'})
 				return JsonResponse({'created': True})
 		except:
-			e = sys.exc_info()[0]
+			e = sys.exc_info()
 			print(e)
 			return JsonResponse({'created': False})
 
@@ -113,9 +114,11 @@ def picture(req):
 		if ( not req.FILES.get('image') or  not req.POST.get('id')):
 			return HttpResponse(content="Bad request. Please include image and id", status=400)
 		image = req.FILES['image']
+		print(type(image))
 		id = parse(req.POST['id'])
-		cargo = list(Cargo.objects.filter(id=id).values())[0]
-
+		cargo = Cargo.objects.filter(id=id)
+		#cargo['image'].save(image.name, image)
+		cargo = list(cargo.values())[0]
 		print(cargo)
 		imgpath = saveImage(id, image)
 		
@@ -133,6 +136,5 @@ def calculateDims2(picture):
 	return {"crop" : [[0,1],[1,1],[1,0],[0,0]],
 			"width": 1,
 			"height": 1}
-
 		
 		
