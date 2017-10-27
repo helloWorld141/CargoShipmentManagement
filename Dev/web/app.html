@@ -106,9 +106,9 @@
             event.stopPropagation();
             this.classList.add('was-validated');
           } else {
-            var height = $("#height").val();
-            var length = $("#length").val();
-            var width = $("#width").val();
+            var height = int($("#height").val());
+            var length = int($("#length").val());
+            var width = int($("#width").val());
             var dimensions = [height, width, length];
             var takePicture = (!$.isNumeric(width) || !$.isNumeric(length));
             var picture = $("#picture").val();
@@ -137,7 +137,7 @@
                 contentType: false,
                 processData: false
               });
-              
+
 
               this.reset();
               typeButtons.forEach(function(node) {
@@ -163,7 +163,7 @@
                 type: 'POST',
                 data: formData,
                 success: function(data) {
-                  alert(data);
+                  console.log(data);
                 },
                 cache: false,
                 contentType: false,
