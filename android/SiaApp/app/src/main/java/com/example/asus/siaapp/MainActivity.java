@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private WebSocketClient mWebSocketClient;
+    public WebSocketClient mWebSocketClient;
     static Camera camera = null;
 
     @Override
@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        connectWebSocket();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -89,11 +88,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void connectWebSocket() {
+    private void connectWebSocket(final Bitmap bmp) {
         URI uri;
         try {
-            uri = new URI("wss://echo.websocket.org:80");
-//            uri = new URI("wss://54.251.191.230");
+            uri = new URI("ws://54.251.191.230/staff");
+//                    "ws://echo.websocket.org:80");
+
+//            "
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -107,11 +108,28 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("after openning");
 //                PrintWriter toServer = new  PrintWriter(clientSocket.getOutputStream(), true);     // write user input to the socket
 //                toServer.println(fromKeyboard);     // create input stream from server
+
+                Thread thread = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try  {
+                            sendRequest(bmp);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+//
+                thread.start();
+
+
             }
 
             @Override
             public void onMessage(String s) {
                 final String message = s;
+                System.out.println("RAWWWW " + s);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -179,19 +197,7 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("Take picture already ");
             ImageView iv = (ImageView) findViewById(R.id.ReturnedImage);
             iv.setImageBitmap(bmp);
-            Thread thread = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try  {
-                        sendRequest(bmp);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-//
-            thread.start();
+            connectWebSocket(bmp);
             camera.release();
 
         }
