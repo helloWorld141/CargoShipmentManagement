@@ -9,10 +9,12 @@ if __name__ == "__main__":
 	args = vars(ap.parse_args())
 	reqpath = args['request']
 	url = args['url']
-	req = json.loads(open(reqpath).read())
+	reqstr = open(reqpath).read()
+	print(type(reqstr))
+	req = json.loads(reqstr)
 	print("Request: " , req)
 
 	imagereq = {'image': open(req['image'], 'rb')}
-	res = requests.post(url, {'width': req['width']}, files = imagereq)
+	res = requests.post(url, {'id': req['id']}, files = imagereq)
 	print("Response: " , res.text)
 
