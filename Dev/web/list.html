@@ -51,8 +51,8 @@
         // Generate HTML string
         var ht=[];
         ht.push('<thead> <tr>');
-        var headers =  ["#", "ID", "Stackable", "Tiltable", "Volume", "Shape", "Remark"];
-        var jsonKeys = ["" , "id", "stackable", "tiltable", "volume", "shape", "pieces"];
+        var headers = ["#", "ID", "Dimensions", "Shape", "Volume", "Stackable", "Tiltable", "Remark"];
+        var jsonKeys = ["", "id", "dims", "type", "volume", "stackable", "tiltable", "remark"];
         for (var i=0; i<headers.length; i++) {
           ht.push('<th scope="col">'+headers[i]+"</th>");
         }
@@ -60,9 +60,31 @@
         ht.push('<tbody>');
         for (var i=0; i<sampleJson.length; i++) {
           ht.push('<tr class="clickable-row"  data-href="">');
-          ht.push('<td>'+(i+1)+'</td>');
-          for (var j=1; j<jsonKeys.length; j++) {
-            ht.push('<td>'+sampleJson[i][jsonKeys[j]]+'</td>');
+          for (var j=0; j<jsonKeys.length; j++) {
+            if (j == 0) {
+              ht.push('<td>'+(i+1)+'</td>');
+            } else if (j == 2) {
+              var dim = JSON.parse(sampleJson[i]['dims']);
+              var h = dim[0].toFixed(1);
+              var w = dim[1].toFixed(1);
+              var l = dim[2].toFixed(1);
+              ht.push('<td>' + h + ', ' + w + ', ' + l + '</td>');
+            } else if (j == 4) {
+              var dim = JSON.parse(sampleJson[i]['dims']);
+              var h = dim[0];
+              var w = dim[1];
+              var l = dim[2];
+              var type = sampleJson[i]['type'];
+              var vol = 0;
+              if (type == 'CYLINDRICAL') {
+                vol = Math.PI * w * w / 4 * h;
+              } else {
+                vol = w * h * l;
+              }
+              ht.push('<td>'+vol.toFixed(1)+'</td>');
+            } else {
+              ht.push('<td>'+sampleJson[i][jsonKeys[j]]+'</td>');
+            }
           }
           ht.push('</tr>');
         }
@@ -85,8 +107,8 @@
         xmlHttp.send(null);
       }
 
-      httpGetAsync("http://54.251.191.230/api/cargo");
-      // generateHTML([{"stackable": true, "pieces": null, "dims": "[1,2,3]", "crops": "", "id": "5", "tiltable": true, "image": ""}, {"stackable": true, "pieces": 2, "dims": "[1,2,3]", "crops": "", "id": "4", "tiltable": false, "image": ""}]);
+      //httpGetAsync("http://54.251.191.230/api/cargo");
+      generateHTML([{"dims": "[4, 50.032448471555185, 96.634463213693621]", "crops": "", "type": "CUBOID", "tiltable": false, "id": "Hieuuu", "pieces": "", "stackable": true, "image": ""}]);
     </script>
   </body>
 </html>
