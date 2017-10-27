@@ -145,8 +145,9 @@
               var formData = new FormData(this);
 
               $.ajax({
+                url: "http://54.251.191.230/api/cargo" ,
                 type: 'POST',
-                data: FormData,
+                data: formData,
                 success: function(data) {
                   alert(data);
                 },
