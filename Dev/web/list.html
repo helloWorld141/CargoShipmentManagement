@@ -51,8 +51,8 @@
         // Generate HTML string
         var ht=[];
         ht.push('<thead> <tr>');
-        var headers =  ["ID", "Stackable", "Tiltable", "Volumne", "Shape", "Remark"];
-        var jsonKeys = ["id", "stackable", "tiltable", "volumne", "shape", "pieces"];
+        var headers =  ["#", "ID", "Stackable", "Tiltable", "Volume", "Shape", "Remark"];
+        var jsonKeys = ["" , "id", "stackable", "tiltable", "volume", "shape", "pieces"];
         for (var i=0; i<headers.length; i++) {
           ht.push('<th scope="col">'+headers[i]+"</th>");
         }
@@ -60,7 +60,8 @@
         ht.push('<tbody>');
         for (var i=0; i<sampleJson.length; i++) {
           ht.push('<tr class="clickable-row"  data-href="">');
-          for (var j=0; j<jsonKeys.length; j++) {
+          ht.push('<td>'+(i+1)+'</td>');
+          for (var j=1; j<jsonKeys.length; j++) {
             ht.push('<td>'+sampleJson[i][jsonKeys[j]]+'</td>');
           }
           ht.push('</tr>');
@@ -84,44 +85,8 @@
         xmlHttp.send(null);
       }
 
-      // httpGetAsync("http://54.251.191.230/api/cargo");
-      generateHTML([{"stackable": true, "pieces": null, "dims": "[1,2,3]", "crops": "", "id": "5", "tiltable": true, "image": ""}, {"stackable": true, "pieces": 2, "dims": "[1,2,3]", "crops": "", "id": "4", "tiltable": false, "image": ""}]);
-
-      //Web socket
-      // var socket = new WebSocket('ws://54.251.191.230/staff/');
-
-      // socket.onopen = function open() {
-      //   console.log('Staff opened socket connection.');
-      // };
-
-      // socket.onmessage = function message(event) {
-      //   var data = JSON.parse(event.data);
-      //   console.log("Received push notification from server: ", data);
-      // }
-
-      //(function() {
-        //'use strict';
-
-        // window.addEventListener('load', function() {
-        //   $('#image').cropper({
-        //     rotatable: true,
-        //     zoomable: false,
-        //     crop: function(e) {}
-        //   });
-
-        //   $('#rotate-degree').slider();
-        //   $('#rotate-degree').on('slide', function(slideEvent) {
-        //     // console.log(slideEvent.value);
-        //     $('#image').cropper('rotateTo', slideEvent.value);
-        //   });
-        // });
-
-        // jQuery(document).ready(function($) {
-        //   $(".clickable-row").click(function() {
-        //     window.location = $(this).data("href");
-        //   })
-        // })
-      //})();
+      httpGetAsync("http://54.251.191.230/api/cargo");
+      // generateHTML([{"stackable": true, "pieces": null, "dims": "[1,2,3]", "crops": "", "id": "5", "tiltable": true, "image": ""}, {"stackable": true, "pieces": 2, "dims": "[1,2,3]", "crops": "", "id": "4", "tiltable": false, "image": ""}]);
     </script>
   </body>
 </html>
